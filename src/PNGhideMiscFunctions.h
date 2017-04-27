@@ -46,3 +46,31 @@ short int IntToBitBinStr (uint32_t Input, unsigned char *Output, uint16_t length
     }
     return 0;
 }
+
+short int BinCopy (unsigned char *Output, unsigned char *Input, int Length){
+    if (Length < 1 || Input == NULL || Output == NULL){
+        return -3;
+    }
+    int i;
+
+    for (i=0; i<Length;i++){
+        *(Output+i)=*(Input+i);
+    }
+
+    return 0;
+}
+
+short int CompareBin (unsigned char *A, unsigned char *B, int Length){
+    if (Length < 1 || A == NULL || B == NULL){
+        return -3;
+    }
+    int i;
+
+    for (i=0; i<Length;i++){
+        if (*(A+i) != *(B+i)){
+            return 1;//Not Equal
+        }
+    }
+
+    return 0;
+}
