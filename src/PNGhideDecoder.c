@@ -57,6 +57,51 @@ int main (int argc, char **argv) {
 return 0;
 }
 
+short int GetHeaderDetails (Picture *Image){
+    if (!Image){
+        return -1;
+    }
+    printf ("Width <px>: ");
+    scanf("%lu",&(Image->Width));
+    printf ("Height <px>: ");
+    scanf("%lu",&(Image->Height));
+    printf ("Bit Deph: ");
+    scanf("%d",&(Image->BitDeph));
+    printf ("Color Space <dec>: ");
+    scanf("%d",&(Image->ColorSpace));
+    return 0;
+}
+
+short int PrintHeader (Picture *Image){
+    if (!Image){
+        return -1;
+    }
+    printf("With = %lu px\n",Image->Width);
+    printf("Height = %lu px\n",Image->Height);
+    printf("Bit Deph = %d\n",Image->BitDeph);
+    printf("ColorSpace = %d ",Image->ColorSpace);
+    switch (Image->ColorSpace){
+        case PNG_COLOR_TYPE_RGBA:
+            printf ("(RGBA)\n");
+            break;
+        case PNG_COLOR_TYPE_RGB:
+            printf ("(RGB)\n");
+            break;
+        case PNG_COLOR_TYPE_GRAY_ALPHA:
+            printf ("(Grayscale + Alpha)\n");
+            break;
+        case PNG_COLOR_TYPE_GRAY:
+            printf ("(Grayscale)\n");
+            break;
+        case PNG_COLOR_TYPE_PALETTE:
+            printf ("(Palette)\n");
+            break;
+        default:
+            printf ("(Unknown)\n");
+            break;
+    }
+    return 0;
+}
 
 short int FindHeader (Picture *OriginalImage, Picture *OutputImage){
     short int OriginalUsableChannels;
@@ -115,9 +160,7 @@ short int FindHeader (Picture *OriginalImage, Picture *OutputImage){
         for (X=0; X<(OriginalImage->Width) && EndSignal == 0; X++) {
             CurrentOriginalPixel = &(CurrentOriginalRow[X*OriginalTotalChannels]);
             for (i=0;i<OriginalUsableChannels;i++){
-            //printf("X %lu ",X);
-            //printf("Y %lu ",Y);
-            //printf("i %d \n",i);
+
                 if (ReadChunks == PNGHIDE_HEADER_SIZE){
                     EndSignal = 1;
                 }
@@ -153,9 +196,7 @@ short int FindHeader (Picture *OriginalImage, Picture *OutputImage){
         for (X=OriginalImage->Width-1; X>=0 && EndSignal == 0; X--) {
             CurrentOriginalPixel = &(CurrentOriginalRow[X*OriginalTotalChannels]);
             for (i=OriginalUsableChannels-1; i>=0; i--){
-            //printf("X %lu ",X);
-            //printf("Y %lu ",Y);
-            //printf("i %d \n",i);
+
                 if (ReadChunks == PNGHIDE_HEADER_SIZE){
                     EndSignal = 1;
                 }
@@ -189,8 +230,6 @@ short int FindHeader (Picture *OriginalImage, Picture *OutputImage){
     if (KeyBitsEnd[0][0] == 0 && KeyBitsEnd[0][1] == 1 && KeyBitsEnd[1][0] == 0 && KeyBitsEnd[1][1] == 1){
         KeyOK = KeyOK +2;
     }
-    //printf ("Key 1 = %d %d %d %d\n",KeyBitsStart[0][0],KeyBitsStart[0][1],KeyBitsStart[1][0],KeyBitsStart[1][1]);
-    //printf ("Key 2 = %d %d %d %d\n",KeyBitsEnd[0][0],KeyBitsEnd[0][1],KeyBitsEnd[1][0],KeyBitsEnd[1][1]);
 
     switch (KeyOK){
         case 0:
@@ -200,14 +239,7 @@ short int FindHeader (Picture *OriginalImage, Picture *OutputImage){
             getchar();
             do {
                 if (opc == 'y' || opc == 'Y'){
-                    printf ("Width <px>: ");
-                    scanf("%lu",&(OutputImage->Width));
-                    printf ("Height <px>: ");
-                    scanf("%lu",&(OutputImage->Height));
-                    printf ("Bit Deph: ");
-                    scanf("%d",&(OutputImage->BitDeph));
-                    printf ("Color Space <dec>: ");
-                    scanf("%d",&(OutputImage->ColorSpace));
+                    GetHeaderDetails (OutputImage);
                     return (-11);
                 }
                 else {
@@ -234,30 +266,7 @@ short int FindHeader (Picture *OriginalImage, Picture *OutputImage){
                 OutputImage->BitDeph = BinBitStrToUint (BinBitDephEnd, PNGHIDE_BIT_DEPH_VAR_LEN);
             }
             printf("Redundant Header information is:\n");
-            printf("With = %lu px\n",OutputImage->Width);
-            printf("Height = %lu px\n",OutputImage->Height);
-            printf("Bit Deph = %d\n",OutputImage->BitDeph);
-            printf("ColorSpace = %d ",OutputImage->ColorSpace);
-            switch (OutputImage->ColorSpace){
-                case PNG_COLOR_TYPE_RGBA:
-                    printf ("(RGBA)\n");
-                    break;
-                case PNG_COLOR_TYPE_RGB:
-                    printf ("(RGB)\n");
-                    break;
-                case PNG_COLOR_TYPE_GRAY_ALPHA:
-                    printf ("(Grayscale + Alpha)\n");
-                    break;
-                case PNG_COLOR_TYPE_GRAY:
-                    printf ("(Grayscale)\n");
-                    break;
-                case PNG_COLOR_TYPE_PALETTE:
-                    printf ("(Palette)\n");
-                    break;
-                default:
-                    printf ("(Unknown)\n");
-                    break;
-            }
+            PrintHeader (OutputImage);
             do{
                 printf ("Proceed with this settings?(y/n) ");
                 scanf("%c",&opc);
@@ -271,14 +280,7 @@ short int FindHeader (Picture *OriginalImage, Picture *OutputImage){
                     getchar();
                     do {
                         if (opc == 'y' || opc == 'Y'){
-                            printf ("Width <px>: ");
-                            scanf("%lu",&(OutputImage->Width));
-                            printf ("Height <px>: ");
-                            scanf("%lu",&(OutputImage->Height));
-                            printf ("Bit Deph: ");
-                            scanf("%d",&(OutputImage->BitDeph));
-                            printf ("Color Space <dec>: ");
-                            scanf("%d",&(OutputImage->ColorSpace));
+                            GetHeaderDetails (OutputImage);
                             return (-11);
                         }
                         else {
@@ -320,69 +322,18 @@ short int FindHeader (Picture *OriginalImage, Picture *OutputImage){
                 OutputImage->ColorSpace = BinBitStrToUint (BinColorSpaceStart, PNGHIDE_COLORSPACE_VAR_LEN);
                 OutputImage->BitDeph = BinBitStrToUint (BinBitDephStart, PNGHIDE_BIT_DEPH_VAR_LEN);
 
-                printf("With = %lu px\n",OutputImage->Width);
-                printf("Height = %lu px\n",OutputImage->Height);
-                printf("Bit Deph = %d\n",OutputImage->BitDeph);
-                printf("ColorSpace = %d ",OutputImage->ColorSpace);
-                switch (OutputImage->ColorSpace){
-                    case PNG_COLOR_TYPE_RGBA:
-                        printf ("(RGBA)\n");
-                        break;
-                    case PNG_COLOR_TYPE_RGB:
-                        printf ("(RGB)\n");
-                        break;
-                    case PNG_COLOR_TYPE_GRAY_ALPHA:
-                        printf ("(Grayscale + Alpha)\n");
-                        break;
-                    case PNG_COLOR_TYPE_GRAY:
-                        printf ("(Grayscale)\n");
-                        break;
-                    case PNG_COLOR_TYPE_PALETTE:
-                        printf ("(Palette)\n");
-                        break;
-                    default:
-                        printf ("(Unknown)\n");
-                        break;
-                }
+                PrintHeader (OutputImage);
+
                 printf ("2:\n");
                 OutputImage->Height = BinBitStrToUint (BinHeightEnd, PNGHIDE_HEIGHT_VAR_LEN);
                 OutputImage->Width = BinBitStrToUint (BinWidthEnd, PNGHIDE_WIDTH_VAR_LEN);
                 OutputImage->ColorSpace = BinBitStrToUint (BinColorSpaceEnd, PNGHIDE_COLORSPACE_VAR_LEN);
                 OutputImage->BitDeph = BinBitStrToUint (BinBitDephEnd, PNGHIDE_BIT_DEPH_VAR_LEN);
-                printf("With = %lu px\n",OutputImage->Width);
-                printf("Height = %lu px\n",OutputImage->Height);
-                printf("Bit Deph = %d\n",OutputImage->BitDeph);
-                printf("ColorSpace = %d ",OutputImage->ColorSpace);
-                switch (OutputImage->ColorSpace){
-                    case PNG_COLOR_TYPE_RGBA:
-                        printf ("(RGBA)\n");
-                        break;
-                    case PNG_COLOR_TYPE_RGB:
-                        printf ("(RGB)\n");
-                        break;
-                    case PNG_COLOR_TYPE_GRAY_ALPHA:
-                        printf ("(Grayscale + Alpha)\n");
-                        break;
-                    case PNG_COLOR_TYPE_GRAY:
-                        printf ("(Grayscale)\n");
-                        break;
-                    case PNG_COLOR_TYPE_PALETTE:
-                        printf ("(Palette)\n");
-                        break;
-                        default:
-                        printf ("(Unknown)\n");
-                        break;
-                }
+
+                PrintHeader (OutputImage);
                 printf ("Please Enter the settings you wich to use:\n");
-                printf ("Width <px>: ");
-                scanf("%lu",&(OutputImage->Width));
-                printf ("Height <px>: ");
-                scanf("%lu",&(OutputImage->Height));
-                printf ("Bit Deph: ");
-                scanf("%d",&(OutputImage->BitDeph));
-                printf ("Color Space <dec>: ");
-                scanf("%d",&(OutputImage->ColorSpace));
-                return (-11);
+                GetHeaderDetails (OutputImage);
+
             }
             else {
                 OutputImage->Height = BinBitStrToUint (BinHeightStart, PNGHIDE_HEIGHT_VAR_LEN);
@@ -391,31 +342,7 @@ short int FindHeader (Picture *OriginalImage, Picture *OutputImage){
                 OutputImage->ColorSpace = BinBitStrToUint (BinColorSpaceEnd, PNGHIDE_COLORSPACE_VAR_LEN);
                 OutputImage->BitDeph = BinBitStrToUint (BinBitDephEnd, PNGHIDE_BIT_DEPH_VAR_LEN);
 
-                printf ("Hidden Image Characteristics\n");
-                printf("With = %lu px\n",OutputImage->Width);
-                printf("Height = %lu px\n",OutputImage->Height);
-                printf("Bit Deph = %d\n",OutputImage->BitDeph);
-                printf("ColorSpace = %d ",OutputImage->ColorSpace);
-                switch (OutputImage->ColorSpace){
-                    case PNG_COLOR_TYPE_RGBA:
-                        printf ("(RGBA)\n");
-                        break;
-                    case PNG_COLOR_TYPE_RGB:
-                        printf ("(RGB)\n");
-                        break;
-                    case PNG_COLOR_TYPE_GRAY_ALPHA:
-                        printf ("(Grayscale + Alpha)\n");
-                        break;
-                    case PNG_COLOR_TYPE_GRAY:
-                        printf ("(Grayscale)\n");
-                        break;
-                    case PNG_COLOR_TYPE_PALETTE:
-                        printf ("(Palette)\n");
-                        break;
-                    default:
-                        printf ("(Unknown)\n");
-                        break;
-                }
+                PrintHeader (OutputImage);
 
             }
 
@@ -492,19 +419,11 @@ short int DecodeImages (Picture *OriginalImage, Picture *HiddenImage){
         for (OriginalX=0; OriginalX<(OriginalImage->Width) && EndSignal == 0; OriginalX++) {
             CurrentOriginalPixel = &(CurrentOriginalRow[OriginalX*OriginalTotalChannels]);
             for (i=0;i<OriginalUsableChannels;i++){
-                //printf ("i = %d ",i);
-                //printf ("OX = %ld ",OriginalX);
-                //printf ("OY = %ld\n",OriginalY);
-                //printf ("HX = %ld ",HiddenX);
-                //printf ("HY = %ld\n",HiddenY);
-                //printf ("Current Bit %d ",CurrentHiddenBit);
-                //printf ("Current Cha %d\n",CurrentHiddenChannel);
+
                 if (ReadChunks > PNGHIDE_HEADER_SIZE-1){
 
                     if (CurrentHiddenBit == HiddenImage->BitDeph){
                         CurrentHiddenlPixel[CurrentHiddenChannel] = BinBitStrToUint(HiddenColorValue,HiddenImage->BitDeph);
-                        //printf ("VAL = %d\n",CurrentHiddenlPixel[CurrentHiddenChannel]);
-
                         CurrentHiddenBit =0;
                         CurrentHiddenChannel++;
                     }
@@ -515,7 +434,6 @@ short int DecodeImages (Picture *OriginalImage, Picture *HiddenImage){
                             HiddenX = 0;
                             HiddenY = HiddenY +2;
                             if (HiddenY >= HiddenImage->Height){
-                                //printf ("END!!\n");
                                 EndSignal =1;
                                 break;
                             }
@@ -554,19 +472,10 @@ short int DecodeImages (Picture *OriginalImage, Picture *HiddenImage){
         for (OriginalX=OriginalImage->Width-1; OriginalX>=0 && EndSignal == 0; OriginalX--) {
             CurrentOriginalPixel = &(CurrentOriginalRow[OriginalX*OriginalTotalChannels]);
             for (i=OriginalUsableChannels-1; i>=0 && EndSignal == 0;i--){
-                //printf ("i = %d ",i);
-                //printf ("OX = %ld ",OriginalX);
-                //printf ("OY = %ld\n",OriginalY);
-                //printf ("HX = %ld ",HiddenX);
-                //printf ("HY = %ld\n",HiddenY);
-                //printf ("Current Bit %d ",CurrentHiddenBit);
-                //printf ("Current Cha %d\n",CurrentHiddenChannel);
 
                 if (ReadChunks > PNGHIDE_HEADER_SIZE-1){
                     if (CurrentHiddenBit == HiddenImage->BitDeph){
                         CurrentHiddenlPixel[CurrentHiddenChannel] = BinBitStrToUint(HiddenColorValue,HiddenImage->BitDeph);
-                        //printf ("VAL = %d\n",CurrentHiddenlPixel[CurrentHiddenChannel]);
-
                         CurrentHiddenBit =0;
                         CurrentHiddenChannel++;
                     }
@@ -577,7 +486,6 @@ short int DecodeImages (Picture *OriginalImage, Picture *HiddenImage){
                             HiddenX = 0;
                             HiddenY = HiddenY +2;
                             if (HiddenY >= HiddenImage->Height){
-                                //printf ("END!!\n");
                                 EndSignal =1;
                                 break;
                             }
@@ -586,12 +494,11 @@ short int DecodeImages (Picture *OriginalImage, Picture *HiddenImage){
 
                         }
 
-CurrentHiddenlPixel = &(CurrentHiddenRow[HiddenX*HiddenNeededChannels]);
+                    CurrentHiddenlPixel = &(CurrentHiddenRow[HiddenX*HiddenNeededChannels]);
 
                     }
                     IntToBitBinStr(CurrentOriginalPixel[i],CurrentColorValue,OriginalImage->BitDeph);
                     HiddenColorValue[CurrentHiddenBit] = CurrentColorValue[0];
-                    //CurrentHiddenlPixel = &(CurrentHiddenRow[HiddenX*HiddenNeededChannels]);
 
                     CurrentHiddenBit++;
 
@@ -607,16 +514,7 @@ CurrentHiddenlPixel = &(CurrentHiddenRow[HiddenX*HiddenNeededChannels]);
     }
     EndSignal = 0;
 
-    /*for (OriginalY=0; OriginalY<(HiddenImage->Height) && EndSignal == 0; OriginalY++) {
-        CurrentOriginalRow = HiddenImage->ImageStart[OriginalY];
-        printf ("\n");
-        for (OriginalX=0; OriginalX<(HiddenImage->Width) && EndSignal == 0; OriginalX++) {
-            CurrentOriginalPixel = &(CurrentOriginalRow[OriginalX*2]);
-            for (i=0;i<2;i++){
-                printf ("%d\t",CurrentOriginalPixel[i]);
-            }
-        }
-    }*/
+
 return 0;
 }
 
