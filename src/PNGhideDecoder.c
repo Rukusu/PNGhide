@@ -131,6 +131,8 @@ short int FindHeader (Picture *OriginalImage, Picture *OutputImage){
     unsigned char BinColorSpaceEnd[PNGHIDE_COLORSPACE_VAR_LEN];///<Stores the read hidden image's color space at the end of the input image as a binary number array.
     unsigned char BinBitDephEnd[PNGHIDE_BIT_DEPH_VAR_LEN];///<Stores the read hidden image's bit deph at the end of the input image as a binary number array.
 
+
+    /*
     switch (OriginalImage->ColorSpace){
         default:
             return -3;
@@ -151,8 +153,30 @@ short int FindHeader (Picture *OriginalImage, Picture *OutputImage){
             OriginalTotalChannels = 1;
             OriginalUsableChannels = 1;
             break;
-
     }
+        switch (HiddenImage->ColorSpace){
+        default:
+            return -3;
+            break;
+        case PNG_COLOR_TYPE_RGBA:
+            HiddenNeededChannels = 4;
+            break;
+        case PNG_COLOR_TYPE_RGB:
+            HiddenNeededChannels = 3;
+            break;
+        case PNG_COLOR_TYPE_GRAY_ALPHA:
+            HiddenNeededChannels = 2;
+            break;
+        case PNG_COLOR_TYPE_GRAY:
+        case PNG_COLOR_TYPE_PALETTE:
+            HiddenNeededChannels = 1;
+            break;
+}
+*/
+    OriginalTotalChannels = GetTotalChannels(OriginalImage);
+    OriginalUsableChannels = GetUsableChannels(OriginalImage);
+    printf ("OT OU = %d %d\n",OriginalTotalChannels,OriginalUsableChannels);
+
     ///<Start reading from the beginning of the input image.
     ReadChunks = 0;
     EndSignal = 0;
@@ -360,10 +384,11 @@ short int FindHeader (Picture *OriginalImage, Picture *OutputImage){
 /*! \brief Function that decodes the hidden image form the original.
  */
 short int DecodeImages (Picture *OriginalImage, Picture *HiddenImage){
-    unsigned char OriginalUsableChannels;///<Stores the amount of color channels in the input image that can be used to store information.
-    unsigned char OriginalTotalChannels;///<Stores the total amount of color channels in the input image.
-    unsigned char HiddenNeededChannels; ///<Stores the amount of channels needed by each pixel of the hidden image.
+    short int OriginalUsableChannels;///<Stores the amount of color channels in the input image that can be used to store information.
+    short int OriginalTotalChannels;///<Stores the total amount of color channels in the input image.
+    short int HiddenNeededChannels; ///<Stores the amount of channels needed by each pixel of the hidden image.
 
+/*
     switch (OriginalImage->ColorSpace){
         default:
             return -3;
@@ -402,7 +427,13 @@ short int DecodeImages (Picture *OriginalImage, Picture *HiddenImage){
         case PNG_COLOR_TYPE_PALETTE:
             HiddenNeededChannels = 1;
             break;
-    }
+}
+*/
+
+    OriginalTotalChannels = GetTotalChannels(OriginalImage);
+    HiddenNeededChannels = GetTotalChannels(HiddenImage);
+    OriginalUsableChannels = GetUsableChannels(OriginalImage);
+    printf ("OT HN OU = %d %d %d\n",OriginalTotalChannels,OriginalUsableChannels,HiddenNeededChannels);
 
     png_byte* CurrentOriginalRow,*CurrentHiddenRow;
     png_byte* CurrentOriginalPixel,*CurrentHiddenlPixel;
