@@ -1,3 +1,7 @@
+
+
+/*! \brief Checks if the image we want to hide fits inside the image we want to hide it in.
+ */
 short int CheckFit (Picture OriginalImage, Picture HiddenImage){
     char OriginalUsableChannels;
     char HiddenNeededChannels;
@@ -49,6 +53,8 @@ short int CheckFit (Picture OriginalImage, Picture HiddenImage){
 return 0;
 }
 
+/*! \brief Read an image's header in order to load it to ram.
+ */
 short int loadPicture (Picture *Image) {
         Image->ImagePointer = fopen (Image->FileLocation,"rb");
         if (!Image->ImagePointer){
@@ -86,6 +92,8 @@ short int loadPicture (Picture *Image) {
     return 0;
 }
 
+/*! \brief Alocates ram space in order to store an image.
+ */
 short int AllocatePictureSpace (Picture *Image){
     register uint32_t i;
     uint32_t j;
@@ -113,6 +121,8 @@ short int AllocatePictureSpace (Picture *Image){
     return 0;
 }
 
+/*! \brief Load an image to ram.
+ */
 short int readPicture (Picture *Image) {
     short int err;
     err = AllocatePictureSpace (Image);
@@ -124,6 +134,9 @@ short int readPicture (Picture *Image) {
 
 }
 
+
+/*! \brief Frees the ram space an image was stored in.
+ */
 void FreeImage (Picture *Image) {
     uint32_t i;
     for (i=0; i<Image->Height; i++){

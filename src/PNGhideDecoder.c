@@ -103,6 +103,9 @@ short int PrintHeader (Picture *Image){
     return 0;
 }
 
+/*! \brief Function that tries to read the output image's header information.
+ *         If there is a problem while reading, it tries to do some troubleshooting.
+ */
 short int FindHeader (Picture *OriginalImage, Picture *OutputImage){
     short int OriginalUsableChannels;///Stores the amount of color channels in the input image that can be used to store information.
     short int OriginalTotalChannels; ///Stores the total amount of color channels in the input image.
@@ -356,6 +359,8 @@ short int FindHeader (Picture *OriginalImage, Picture *OutputImage){
     return 0;
 }
 
+/*! \brief Function that decodes the hidden image form the original.
+ */
 short int DecodeImages (Picture *OriginalImage, Picture *HiddenImage){
     unsigned char OriginalUsableChannels;///Stores the amount of color channels in the input image that can be used to store information.
     unsigned char OriginalTotalChannels;///Stores the total amount of color channels in the input image.

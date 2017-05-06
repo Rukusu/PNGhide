@@ -1,4 +1,5 @@
-
+/*! \brief Convert a binary number stored in a string to a decimal unsigned 32 bit number.
+ */
 uint32_t BinBitStrToUint (unsigned char *Input, uint16_t length){
     uint32_t Output;
     register short int i=0;
@@ -21,7 +22,8 @@ uint32_t BinBitStrToUint (unsigned char *Input, uint16_t length){
     return Output;
 }
 
-
+/*! \brief Convert a decimal unsigned 32 bit number to a binary number stored inside a string.
+ */
 short int IntToBitBinStr (uint32_t Input, unsigned char *Output, uint16_t length){
 
     register short int i=0;
@@ -47,6 +49,8 @@ short int IntToBitBinStr (uint32_t Input, unsigned char *Output, uint16_t length
     return 0;
 }
 
+/*! \brief Copies the content of an array to another.
+ */
 short int BinCopy (unsigned char *Output, unsigned char *Input, int Length){
     if (Length < 1 || Input == NULL || Output == NULL){
         return -3;
@@ -60,6 +64,8 @@ short int BinCopy (unsigned char *Output, unsigned char *Input, int Length){
     return 0;
 }
 
+/*! \brief Compares the content of two arrays.
+ */
 short int CompareBin (unsigned char *A, unsigned char *B, int Length){
     if (Length < 1 || A == NULL || B == NULL){
         return -3;
