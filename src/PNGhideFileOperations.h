@@ -1,4 +1,45 @@
 
+short int GetTotalChannels (Picture *Image) {
+    short int Channels = 0;
+    switch (Image->ColorSpace){
+        default:
+            Channels -3;
+            break;
+        case PNG_COLOR_TYPE_RGBA:
+            Channels = 4;
+            break;
+        case PNG_COLOR_TYPE_RGB:
+            Channels = 3;
+            break;
+        case PNG_COLOR_TYPE_GRAY_ALPHA:
+            Channels = 2;
+            break;
+        case PNG_COLOR_TYPE_GRAY:
+        case PNG_COLOR_TYPE_PALETTE:
+            Channels = 1;
+            break;
+    }
+return (Channels);
+}
+
+short int GetUsableChannels (Picture *Image) {
+    short int UsableChannels = 0;
+
+    switch (Image->ColorSpace){
+        default:
+            UsableChannels = -3;
+            break;
+        case PNG_COLOR_TYPE_RGB:
+        case PNG_COLOR_TYPE_RGBA:
+            UsableChannels = 3;
+            break;
+        case PNG_COLOR_TYPE_GRAY:
+        case PNG_COLOR_TYPE_GRAY_ALPHA:
+            UsableChannels = 1;
+            break;
+    }
+    return (UsableChannels);
+}
 
 /*! \brief Checks if the image we want to hide fits inside the image we want to hide it in.
  */
@@ -7,39 +48,14 @@ short int CheckFit (Picture OriginalImage, Picture HiddenImage){
     char HiddenNeededChannels;
     uint64_t AvailableBits;
     uint64_t NeededBits;
-    switch (OriginalImage.ColorSpace){
-        default:
-            return -3;
-            break;
-        case PNG_COLOR_TYPE_RGB:
-        case PNG_COLOR_TYPE_RGBA:
-            OriginalUsableChannels = 3;
-            break;
-        case PNG_COLOR_TYPE_GRAY:
-        case PNG_COLOR_TYPE_GRAY_ALPHA:
-            OriginalUsableChannels = 1;
-            break;
-    }
+
+
+    OriginalUsableChannels = GetUsableChannels(&OriginalImage);
+
     AvailableBits = (OriginalImage.Width * OriginalImage.Height) * OriginalUsableChannels;
 
-    switch (HiddenImage.ColorSpace){
-        default:
-            return -3;
-            break;
-        case PNG_COLOR_TYPE_RGBA:
-            HiddenNeededChannels = 4;
-            break;
-        case PNG_COLOR_TYPE_RGB:
-            HiddenNeededChannels = 3;
-            break;
-        case PNG_COLOR_TYPE_GRAY_ALPHA:
-            HiddenNeededChannels = 2;
-            break;
-        case PNG_COLOR_TYPE_GRAY:
-        case PNG_COLOR_TYPE_PALETTE:
-            HiddenNeededChannels = 1;
-            break;
-    }
+    HiddenNeededChannels = GetTotalChannels(&HiddenImage);
+
     NeededBits = 2*PNGHIDE_HEADER_SIZE;
     NeededBits = NeededBits + (HiddenImage.Width * HiddenImage.Height * HiddenNeededChannels * HiddenImage.BitDeph)+ 4;
 
@@ -97,29 +113,9 @@ short int loadPicture (Picture *Image) {
 short int AllocatePictureSpace (Picture *Image){
     uint32_t i;
     uint32_t j;
+    short int Channels;
 
-
-
-    char Channels;
-    switch (Image->ColorSpace){
-        default:
-            return -3;
-            break;
-        case PNG_COLOR_TYPE_RGBA:
-            Channels = 4;
-            break;
-        case PNG_COLOR_TYPE_RGB:
-            Channels = 3;
-            break;
-        case PNG_COLOR_TYPE_GRAY_ALPHA:
-            Channels = 2;
-            break;
-        case PNG_COLOR_TYPE_GRAY:
-        case PNG_COLOR_TYPE_PALETTE:
-            Channels = 1;
-            break;
-    }
-
+    Channels = GetTotalChannels(Image);
 
     Image->ImageStart = (png_bytep*) malloc(sizeof(png_bytep) * Image->Height);
     if (Image->ImageStart == NULL){
