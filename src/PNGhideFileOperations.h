@@ -95,12 +95,30 @@ short int loadPicture (Picture *Image) {
 /*! \brief Alocates ram space in order to store an image.
  */
 short int AllocatePictureSpace (Picture *Image){
-    register uint32_t i;
+    uint32_t i;
     uint32_t j;
-    uint64_t RowBytes;
 
 
-    RowBytes = png_get_rowbytes(Image->Payload,Image->Header);
+
+    char Channels;
+    switch (Image->ColorSpace){
+        default:
+            return -3;
+            break;
+        case PNG_COLOR_TYPE_RGBA:
+            Channels = 4;
+            break;
+        case PNG_COLOR_TYPE_RGB:
+            Channels = 3;
+            break;
+        case PNG_COLOR_TYPE_GRAY_ALPHA:
+            Channels = 2;
+            break;
+        case PNG_COLOR_TYPE_GRAY:
+        case PNG_COLOR_TYPE_PALETTE:
+            Channels = 1;
+            break;
+    }
 
 
     Image->ImageStart = (png_bytep*) malloc(sizeof(png_bytep) * Image->Height);
@@ -109,7 +127,7 @@ short int AllocatePictureSpace (Picture *Image){
         return -2;
     }
     for (i=0; i<Image->Height; i++){
-        Image->ImageStart[i] = (png_byte*) malloc(RowBytes);
+        Image->ImageStart[i] = (png_byte*) malloc (sizeof(png_byte)*Image->Width*Image->BitDeph*Channels);//malloc(RowBytes);
         if (Image->ImageStart[i] == NULL){
             for (j=0; j<i; j++){
                 free (Image->ImageStart[j]);
@@ -146,12 +164,11 @@ void FreeImage (Picture *Image) {
 }
 
 short int WriteOutput (Picture *Image) {
-        Image->ImagePointer = fopen (Image->FileLocation,"wb");
+    Image->ImagePointer = fopen (Image->FileLocation,"wb");
         if (!Image->ImagePointer){
             printf ("Error: Couldn't write image\n");
             return (-1);
         }
-
 	Image->Payload = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
         Image->Header = png_create_info_struct(Image->Payload);
         if (Image->Payload == NULL || Image->Header == NULL){

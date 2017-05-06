@@ -51,9 +51,7 @@ int main (int argc, char **argv) {
     FreeImage (&OutputImage);
 
     fclose (OriginalImage.ImagePointer);
-
     fclose (OutputImage.ImagePointer);
-
 return 0;
 }
 
@@ -107,13 +105,13 @@ short int PrintHeader (Picture *Image){
  *         If there is a problem while reading, it tries to do some troubleshooting.
  */
 short int FindHeader (Picture *OriginalImage, Picture *OutputImage){
-    short int OriginalUsableChannels;///Stores the amount of color channels in the input image that can be used to store information.
-    short int OriginalTotalChannels; ///Stores the total amount of color channels in the input image.
+    short int OriginalUsableChannels;///<Stores the amount of color channels in the input image that can be used to store information.
+    short int OriginalTotalChannels; ///<Stores the total amount of color channels in the input image.
     short int err;
-    uint64_t ReadChunks;///Counts how many image channels we have stracted information from.
-    int64_t X,Y;///Our current X,Y position on the input image.
-    png_byte* CurrentOriginalRow; ///Pointer to the beginning of a row's array of pixels.
-    png_byte* CurrentOriginalPixel; ///Pointer to the input image's pixel struct.
+    uint64_t ReadChunks;///<Counts how many image channels we have stracted information from.
+    int64_t X,Y;///<Our current X,Y position on the input image.
+    png_byte* CurrentOriginalRow; ///<Pointer to the beginning of a row's array of pixels.
+    png_byte* CurrentOriginalPixel; ///<Pointer to the input image's pixel struct.
 
     char opc;
     register char i;
@@ -121,17 +119,17 @@ short int FindHeader (Picture *OriginalImage, Picture *OutputImage){
     unsigned char KeyOK = 0;
 
     unsigned char CurrentColorValue [OriginalImage->BitDeph];
-    unsigned char KeyBitsStart [2][2]; ///Stores the read key bits at the beggining of the input image.
-    unsigned char BinWidthStart[PNGHIDE_WIDTH_VAR_LEN]; ///Stores the read hidden image's width at the start of the input image as a binary number array.
-    unsigned char BinHeightStart[PNGHIDE_HEIGHT_VAR_LEN]; ///Stores the read hidden image's height at the start of the input image as a binary number array.
-    unsigned char BinColorSpaceStart[PNGHIDE_COLORSPACE_VAR_LEN]; ///Stores the read hidden image's color space at the start of the input image as a binary number array.
-    unsigned char BinBitDephStart[PNGHIDE_BIT_DEPH_VAR_LEN]; ///Stores the read hidden image's bit deph at the start of the input image as a binary number array.
+    unsigned char KeyBitsStart [2][2]; ///<Stores the read key bits at the beggining of the input image.
+    unsigned char BinWidthStart[PNGHIDE_WIDTH_VAR_LEN]; ///<Stores the read hidden image's width at the start of the input image as a binary number array.
+    unsigned char BinHeightStart[PNGHIDE_HEIGHT_VAR_LEN]; ///<Stores the read hidden image's height at the start of the input image as a binary number array.
+    unsigned char BinColorSpaceStart[PNGHIDE_COLORSPACE_VAR_LEN]; ///<Stores the read hidden image's color space at the start of the input image as a binary number array.
+    unsigned char BinBitDephStart[PNGHIDE_BIT_DEPH_VAR_LEN]; ///<Stores the read hidden image's bit deph at the start of the input image as a binary number array.
 
-    unsigned char KeyBitsEnd [2][2]; ///Stores the read key bits at the end of the input image.
-    unsigned char BinWidthEnd[PNGHIDE_WIDTH_VAR_LEN];///Stores the read hidden image's width at the end of the input image as a binary number array.
-    unsigned char BinHeightEnd[PNGHIDE_HEIGHT_VAR_LEN];///Stores the read hidden image's height at the end of the input image as a binary number array.
-    unsigned char BinColorSpaceEnd[PNGHIDE_COLORSPACE_VAR_LEN];///Stores the read hidden image's color space at the end of the input image as a binary number array.
-    unsigned char BinBitDephEnd[PNGHIDE_BIT_DEPH_VAR_LEN];///Stores the read hidden image's bit deph at the end of the input image as a binary number array.
+    unsigned char KeyBitsEnd [2][2]; ///<Stores the read key bits at the end of the input image.
+    unsigned char BinWidthEnd[PNGHIDE_WIDTH_VAR_LEN];///<Stores the read hidden image's width at the end of the input image as a binary number array.
+    unsigned char BinHeightEnd[PNGHIDE_HEIGHT_VAR_LEN];///<Stores the read hidden image's height at the end of the input image as a binary number array.
+    unsigned char BinColorSpaceEnd[PNGHIDE_COLORSPACE_VAR_LEN];///<Stores the read hidden image's color space at the end of the input image as a binary number array.
+    unsigned char BinBitDephEnd[PNGHIDE_BIT_DEPH_VAR_LEN];///<Stores the read hidden image's bit deph at the end of the input image as a binary number array.
 
     switch (OriginalImage->ColorSpace){
         default:
@@ -155,7 +153,7 @@ short int FindHeader (Picture *OriginalImage, Picture *OutputImage){
             break;
 
     }
-    ///Start reading from the beginning of the input image.
+    ///<Start reading from the beginning of the input image.
     ReadChunks = 0;
     EndSignal = 0;
     for (Y=0; Y<(OriginalImage->Height) && EndSignal == 0; Y++) {
@@ -165,17 +163,17 @@ short int FindHeader (Picture *OriginalImage, Picture *OutputImage){
             for (i=0;i<OriginalUsableChannels;i++){
 
                 if (ReadChunks == PNGHIDE_HEADER_SIZE){
-                    EndSignal = 1; ///We finished reading the header at the beginning of the image
+                    EndSignal = 1; ///<We finished reading the header at the beginning of the image
                 }
                 if (ReadChunks>=0 && ReadChunks <= 1){
-                    IntToBitBinStr (CurrentOriginalPixel[i], CurrentColorValue, OriginalImage->BitDeph);///Read key bits.
+                    IntToBitBinStr (CurrentOriginalPixel[i], CurrentColorValue, OriginalImage->BitDeph);///<Read key bits.
                     BinCopy (KeyBitsStart[ReadChunks],CurrentColorValue,2);
                 }
                 if (ReadChunks>1 && ReadChunks<PNGHIDE_WIDTH_VAR_LEN+2){
-                    IntToBitBinStr (CurrentOriginalPixel[i], CurrentColorValue, OriginalImage->BitDeph);///Convert the current decimal color value to a binary array.
-                    BinWidthStart[ReadChunks-2] = CurrentColorValue[0];///Store the LSB into an array.
+                    IntToBitBinStr (CurrentOriginalPixel[i], CurrentColorValue, OriginalImage->BitDeph);///<Convert the current decimal color value to a binary array.
+                    BinWidthStart[ReadChunks-2] = CurrentColorValue[0];///<Store the LSB into an array.
                 }
-                if (ReadChunks>=PNGHIDE_WIDTH_VAR_LEN+2 && ReadChunks<PNGHIDE_HEIGHT_VAR_LEN+PNGHIDE_WIDTH_VAR_LEN+1){
+                if (ReadChunks>=PNGHIDE_WIDTH_VAR_LEN+2 && ReadChunks<PNGHIDE_HEIGHT_VAR_LEN+PNGHIDE_WIDTH_VAR_LEN+2){
                     IntToBitBinStr (CurrentOriginalPixel[i], CurrentColorValue, OriginalImage->BitDeph);
                     BinHeightStart[ReadChunks-PNGHIDE_WIDTH_VAR_LEN-2] = CurrentColorValue[0];
                 }
@@ -194,7 +192,7 @@ short int FindHeader (Picture *OriginalImage, Picture *OutputImage){
 
     ReadChunks = 0;
     EndSignal = 0;
-    ///Start reading from the ending of the input image.
+    ///<Start reading from the ending of the input image.
     for (Y=OriginalImage->Height-1; Y>=0 && EndSignal == 0; Y--) {
         CurrentOriginalRow = OriginalImage->ImageStart[Y];
         for (X=OriginalImage->Width-1; X>=0 && EndSignal == 0; X--) {
@@ -202,10 +200,10 @@ short int FindHeader (Picture *OriginalImage, Picture *OutputImage){
             for (i=OriginalUsableChannels-1; i>=0; i--){
 
                 if (ReadChunks == PNGHIDE_HEADER_SIZE){
-                    EndSignal = 1; ///We finished reading the header at the end of the image.
+                    EndSignal = 1; ///<We finished reading the header at the end of the image.
                 }
                 if (ReadChunks>=0 && ReadChunks <= 1){
-                    IntToBitBinStr (CurrentOriginalPixel[i], CurrentColorValue, OriginalImage->BitDeph);///Read key bits.
+                    IntToBitBinStr (CurrentOriginalPixel[i], CurrentColorValue, OriginalImage->BitDeph);///<Read key bits.
                     BinCopy (KeyBitsEnd[ReadChunks],CurrentColorValue,2);
                 }
                 if (ReadChunks>1 && ReadChunks<PNGHIDE_WIDTH_VAR_LEN+2){
@@ -228,15 +226,15 @@ short int FindHeader (Picture *OriginalImage, Picture *OutputImage){
             }
         }
     }
-    if (KeyBitsStart[0][0] == 0 && KeyBitsStart[0][1] == 1 && KeyBitsStart[1][0] == 0 && KeyBitsStart[1][1] == 1){///Check the key at the beggining of the input image.
+    if (KeyBitsStart[0][0] == 0 && KeyBitsStart[0][1] == 1 && KeyBitsStart[1][0] == 0 && KeyBitsStart[1][1] == 1){///<Check the key at the beggining of the input image.
         KeyOK++;
     }
-    if (KeyBitsEnd[0][0] == 0 && KeyBitsEnd[0][1] == 1 && KeyBitsEnd[1][0] == 0 && KeyBitsEnd[1][1] == 1){///Check the key at the beginning of the input image.
+    if (KeyBitsEnd[0][0] == 0 && KeyBitsEnd[0][1] == 1 && KeyBitsEnd[1][0] == 0 && KeyBitsEnd[1][1] == 1){///<Check the key at the beginning of the input image.
         KeyOK = KeyOK +2;
     }
 
     switch (KeyOK){
-        case 0: ///None of the keys passed the check.
+        case 0: ///<None of the keys passed the check.
             printf ("Error: Hidden Image Header is Corrupted\n");
             printf ("Enter Manual Settings?(y/n) ");
             scanf("%c",&opc);
@@ -252,8 +250,8 @@ short int FindHeader (Picture *OriginalImage, Picture *OutputImage){
                 }
             }while (opc != 'n' && opc != 'N' && opc != 'y' && opc != 'y');
             break;
-        case 1:///The key at the end of the input image didn't pass the check.
-        case 2:///The key at the beginning of the input image didn't pass the check.
+        case 1:///<The key at the end of the input image didn't pass the check.
+        case 2:///<The key at the beginning of the input image didn't pass the check.
             printf ("Error: One of the hidden image headers is corrupted.\n");
             printf ("This probably means that the host image has been modified.\n");
             printf ("We might no be able to retrive the hidden image\n");
@@ -296,9 +294,9 @@ short int FindHeader (Picture *OriginalImage, Picture *OutputImage){
             }while (opc != 'n' && opc != 'N' && opc != 'y' && opc != 'y');
 
             break;
-        case 3:///Both keys passed the test.
+        case 3:///<Both keys passed the test.
 
-            ///Check both headers' information for missmatches.
+            ///<Check both headers' information for missmatches.
             if (CompareBin (BinHeightStart,BinHeightEnd,PNGHIDE_HEIGHT_VAR_LEN) != 0){
                 err = 1;
             }
@@ -317,7 +315,7 @@ short int FindHeader (Picture *OriginalImage, Picture *OutputImage){
                     }
                 }
             }
-            if (err ==  1){///If the information of both headers doesn't match.
+            if (err ==  1){///<If the information of both headers doesn't match.
                 printf ("Error: Image Header Mismatch\n");
                 printf ("This probably means that the host image has been modified.\n");
                 printf ("We might no be able to retrive the hidden image\n");
@@ -362,9 +360,9 @@ short int FindHeader (Picture *OriginalImage, Picture *OutputImage){
 /*! \brief Function that decodes the hidden image form the original.
  */
 short int DecodeImages (Picture *OriginalImage, Picture *HiddenImage){
-    unsigned char OriginalUsableChannels;///Stores the amount of color channels in the input image that can be used to store information.
-    unsigned char OriginalTotalChannels;///Stores the total amount of color channels in the input image.
-    unsigned char HiddenNeededChannels; ///Stores the amount of channels needed by each pixel of the hidden image.
+    unsigned char OriginalUsableChannels;///<Stores the amount of color channels in the input image that can be used to store information.
+    unsigned char OriginalTotalChannels;///<Stores the total amount of color channels in the input image.
+    unsigned char HiddenNeededChannels; ///<Stores the amount of channels needed by each pixel of the hidden image.
 
     switch (OriginalImage->ColorSpace){
         default:
@@ -408,9 +406,9 @@ short int DecodeImages (Picture *OriginalImage, Picture *HiddenImage){
 
     png_byte* CurrentOriginalRow,*CurrentHiddenRow;
     png_byte* CurrentOriginalPixel,*CurrentHiddenlPixel;
-    int64_t OriginalX,OriginalY; ///Our current position on the input image.
-    int64_t HiddenX = 0,HiddenY = 0;///Our current position on the output image.
-    uint64_t ReadChunks = 0;///Counts how many image channels we have stracted information from.
+    int64_t OriginalX,OriginalY; ///<Our current position on the input image.
+    int64_t HiddenX = 0,HiddenY = 0;///<Our current position on the output image.
+    uint64_t ReadChunks = 0;///<Counts how many image channels we have stracted information from.
     register short int i;
     short int CurrentHiddenBit = 0;
 
@@ -421,7 +419,9 @@ short int DecodeImages (Picture *OriginalImage, Picture *HiddenImage){
     unsigned char CurrentHiddenChannel;
 
     CurrentHiddenRow = HiddenImage->ImageStart[HiddenY];
+
     CurrentHiddenlPixel = &(CurrentHiddenRow[HiddenX*HiddenNeededChannels]);
+
     //IDA
     for (OriginalY=0; OriginalY<(OriginalImage->Height) && EndSignal == 0; OriginalY++) {
         CurrentOriginalRow = OriginalImage->ImageStart[OriginalY];
@@ -432,7 +432,7 @@ short int DecodeImages (Picture *OriginalImage, Picture *HiddenImage){
                 if (ReadChunks > PNGHIDE_HEADER_SIZE-1){
 
                     if (CurrentHiddenBit == HiddenImage->BitDeph){
-                        CurrentHiddenlPixel[CurrentHiddenChannel] = BinBitStrToUint(HiddenColorValue,HiddenImage->BitDeph);
+                        CurrentHiddenlPixel [CurrentHiddenChannel] = (png_byte) BinBitStrToUint(HiddenColorValue,HiddenImage->BitDeph);
                         CurrentHiddenBit =0;
                         CurrentHiddenChannel++;
                     }
@@ -484,7 +484,7 @@ short int DecodeImages (Picture *OriginalImage, Picture *HiddenImage){
 
                 if (ReadChunks > PNGHIDE_HEADER_SIZE-1){
                     if (CurrentHiddenBit == HiddenImage->BitDeph){
-                        CurrentHiddenlPixel[CurrentHiddenChannel] = BinBitStrToUint(HiddenColorValue,HiddenImage->BitDeph);
+                        CurrentHiddenlPixel[CurrentHiddenChannel] = (png_byte)BinBitStrToUint(HiddenColorValue,HiddenImage->BitDeph);
                         CurrentHiddenBit =0;
                         CurrentHiddenChannel++;
                     }
@@ -521,7 +521,6 @@ short int DecodeImages (Picture *OriginalImage, Picture *HiddenImage){
             }
         }
     }
-    EndSignal = 0;
 
 
 return 0;
