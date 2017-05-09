@@ -3,7 +3,7 @@ short int GetTotalChannels (Picture *Image) {
     short int Channels = 0;
     switch (Image->ColorSpace){
         default:
-            Channels -3;
+            Channels = -3;
             break;
         case PNG_COLOR_TYPE_RGBA:
             Channels = 4;
@@ -77,12 +77,12 @@ short int loadPicture (Picture *Image) {
             printf ("Error: Couldn't open image\n");
             return (-1);
         }
-        char FileSignature[8];
-        if (fread(FileSignature, 1, 8, Image->ImagePointer) != 8){
+        unsigned char FileSignature[8];
+        if (fread(FileSignature, 1, 8, Image->ImagePointer) != 8){///Read the first byte of the file
             printf ("Error: Couldn't read image\n");
             return (-4);
         }
-        if (png_sig_cmp(FileSignature, 0, 8) != 0){
+        if (png_sig_cmp(FileSignature, 0, 8) != 0){///Check the first byte of the file to see if its a PNG
             printf ("Error: Unsuported file type\n");
             return (-5);
         }

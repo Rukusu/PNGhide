@@ -23,7 +23,8 @@ int main (int argc, char **argv) {
     OriginalImage.FileLocation = argv[1];
     OutputImage.FileLocation = argv [2];
 
-    if (err = loadPicture (&OriginalImage)!= 0)
+    err = loadPicture (&OriginalImage);
+    if (err != 0)
         return (err);
 
     if (OriginalImage.ColorSpace == PNG_COLOR_TYPE_PALETTE){
@@ -36,7 +37,8 @@ int main (int argc, char **argv) {
         return -3;
     }
 
-    if (err = readPicture (&OriginalImage) != 0)
+    err = readPicture (&OriginalImage);
+    if (err != 0)
         return err;
 
     FindHeader (&OriginalImage, &OutputImage);
@@ -45,7 +47,8 @@ int main (int argc, char **argv) {
     DecodeImages(&OriginalImage, &OutputImage);
 
 
-    if (err = WriteOutput (&OutputImage) !=0 )
+    err = WriteOutput (&OutputImage);
+    if (err != 0)
         return err;
     FreeImage (&OriginalImage);
     FreeImage (&OutputImage);
@@ -60,13 +63,13 @@ short int GetHeaderDetails (Picture *Image){
         return -1;
     }
     printf ("Width <px>: ");
-    scanf("%lu",&(Image->Width));
+    scanf("%u",&(Image->Width));
     printf ("Height <px>: ");
-    scanf("%lu",&(Image->Height));
+    scanf("%u",&(Image->Height));
     printf ("Bit Deph: ");
-    scanf("%d",&(Image->BitDeph));
+    scanf("%s",&(Image->BitDeph));
     printf ("Color Space <dec>: ");
-    scanf("%d",&(Image->ColorSpace));
+    scanf("%s",&(Image->ColorSpace));
     return 0;
 }
 
@@ -74,8 +77,8 @@ short int PrintHeader (Picture *Image){
     if (!Image){
         return -1;
     }
-    printf("With = %lu px\n",Image->Width);
-    printf("Height = %lu px\n",Image->Height);
+    printf("With = %u px\n",Image->Width);
+    printf("Height = %u px\n",Image->Height);
     printf("Bit Deph = %d\n",Image->BitDeph);
     printf("ColorSpace = %d ",Image->ColorSpace);
     switch (Image->ColorSpace){
@@ -154,24 +157,6 @@ short int FindHeader (Picture *OriginalImage, Picture *OutputImage){
             OriginalUsableChannels = 1;
             break;
     }
-        switch (HiddenImage->ColorSpace){
-        default:
-            return -3;
-            break;
-        case PNG_COLOR_TYPE_RGBA:
-            HiddenNeededChannels = 4;
-            break;
-        case PNG_COLOR_TYPE_RGB:
-            HiddenNeededChannels = 3;
-            break;
-        case PNG_COLOR_TYPE_GRAY_ALPHA:
-            HiddenNeededChannels = 2;
-            break;
-        case PNG_COLOR_TYPE_GRAY:
-        case PNG_COLOR_TYPE_PALETTE:
-            HiddenNeededChannels = 1;
-            break;
-}
 */
     OriginalTotalChannels = GetTotalChannels(OriginalImage);
     OriginalUsableChannels = GetUsableChannels(OriginalImage);
@@ -189,7 +174,7 @@ short int FindHeader (Picture *OriginalImage, Picture *OutputImage){
                 if (ReadChunks == PNGHIDE_HEADER_SIZE){
                     EndSignal = 1; ///<We finished reading the header at the beginning of the image
                 }
-                if (ReadChunks>=0 && ReadChunks <= 1){
+                if (ReadChunks <= 1){
                     IntToBitBinStr (CurrentOriginalPixel[i], CurrentColorValue, OriginalImage->BitDeph);///<Read key bits.
                     BinCopy (KeyBitsStart[ReadChunks],CurrentColorValue,2);
                 }
@@ -226,7 +211,7 @@ short int FindHeader (Picture *OriginalImage, Picture *OutputImage){
                 if (ReadChunks == PNGHIDE_HEADER_SIZE){
                     EndSignal = 1; ///<We finished reading the header at the end of the image.
                 }
-                if (ReadChunks>=0 && ReadChunks <= 1){
+                if (ReadChunks <= 1){
                     IntToBitBinStr (CurrentOriginalPixel[i], CurrentColorValue, OriginalImage->BitDeph);///<Read key bits.
                     BinCopy (KeyBitsEnd[ReadChunks],CurrentColorValue,2);
                 }
@@ -387,8 +372,8 @@ short int DecodeImages (Picture *OriginalImage, Picture *HiddenImage){
     short int OriginalUsableChannels;///<Stores the amount of color channels in the input image that can be used to store information.
     short int OriginalTotalChannels;///<Stores the total amount of color channels in the input image.
     short int HiddenNeededChannels; ///<Stores the amount of channels needed by each pixel of the hidden image.
-
 /*
+
     switch (OriginalImage->ColorSpace){
         default:
             return -3;
@@ -428,8 +413,8 @@ short int DecodeImages (Picture *OriginalImage, Picture *HiddenImage){
             HiddenNeededChannels = 1;
             break;
 }
-*/
 
+*/
     OriginalTotalChannels = GetTotalChannels(OriginalImage);
     HiddenNeededChannels = GetTotalChannels(HiddenImage);
     OriginalUsableChannels = GetUsableChannels(OriginalImage);
