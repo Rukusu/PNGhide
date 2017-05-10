@@ -6,6 +6,6 @@ Comments, Documentation and Proper code structure will be added shortly.
 
 **********************************************************************************************
 Dependences
--> Clang
--> libpng
+* Clang
+* libpng
 **********************************************************************************************
