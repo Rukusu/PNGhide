@@ -4,9 +4,9 @@
 #include <png.h>
 #include <zlib.h>
 
-#include "PNGhideDataDefinitions.h"
-#include "PNGhideFileOperations.h"
-#include "PNGhideMiscFunctions.h"
+#include <PNGhideDataDefinitions.h>
+#include <PNGhideFileOperations.h>
+#include <PNGhideMiscFunctions.h>
 
 short int EncodeImages (Picture *OriginalImage, Picture *HiddenImage);
 int main (int argc, char **argv) {
@@ -22,9 +22,11 @@ int main (int argc, char **argv) {
     OriginalImage.FileLocation = argv[1];
     HiddenImage.FileLocation = argv [2];
 
-    if (err = loadPicture(&HiddenImage) != 0)
+    err = loadPicture(&HiddenImage);
+    if (err != 0)
         return (err);
-    if (err = loadPicture (&OriginalImage)!= 0)
+    err = loadPicture (&OriginalImage);
+    if (err != 0)
         return (err);
 
     if (OriginalImage.ColorSpace == PNG_COLOR_TYPE_PALETTE || HiddenImage.ColorSpace == PNG_COLOR_TYPE_PALETTE){
@@ -41,12 +43,14 @@ int main (int argc, char **argv) {
         return -2;
     }
 
-    if (err = readPicture (&OriginalImage) != 0){
+    err = readPicture (&OriginalImage);
+    if (err != 0){
         printf ("Could not read original\n");
         return err;
         }
 
-    if (err = readPicture (&HiddenImage) != 0){
+    err = readPicture (&HiddenImage);
+    if (err != 0){
         printf ("Could not read hidden\n");
         return err;
         }
@@ -55,11 +59,13 @@ int main (int argc, char **argv) {
     OutputImage.ImagePointer = NULL;
     OutputImage.FileLocation = argv [3];
 
-    if (err = EncodeImages (&OriginalImage, &HiddenImage) != 0){
+    err = EncodeImages (&OriginalImage, &HiddenImage);
+    if (err != 0){
         return err;
     }
 
-    if (err = WriteOutput (&OutputImage) !=0 ){
+    err = WriteOutput (&OutputImage);
+    if (err != 0){
         return err;
     }
 
@@ -152,30 +158,30 @@ short int EncodeImages (Picture *OriginalImage, Picture *HiddenImage){
 
 
                 if (ReadChunks>=0 && ReadChunks <=1){
-                    IntToBitBinStr (CurrentOriginalPixel[CurrentOriginalChannel], CurrentColorValue, OriginalImage->BitDeph);
+                    IntToBitBinStr (CurrentOriginalPixel[(int)CurrentOriginalChannel], CurrentColorValue, OriginalImage->BitDeph);
                     CurrentColorValue[0] = 0;
                     CurrentColorValue[1] = 1;
-                    CurrentOriginalPixel[CurrentOriginalChannel] = (png_byte)BinBitStrToUint (CurrentColorValue, OriginalImage->BitDeph);
+                    CurrentOriginalPixel[(int)CurrentOriginalChannel] = (png_byte)BinBitStrToUint (CurrentColorValue, OriginalImage->BitDeph);
                 }
                 if (ReadChunks>1 && ReadChunks<PNGHIDE_WIDTH_VAR_LEN+2){
-                    IntToBitBinStr (CurrentOriginalPixel[CurrentOriginalChannel], CurrentColorValue, OriginalImage->BitDeph);
+                    IntToBitBinStr (CurrentOriginalPixel[(int)CurrentOriginalChannel], CurrentColorValue, OriginalImage->BitDeph);
                     CurrentColorValue [0] = EncodedWidth[ReadChunks-2];
-                    CurrentOriginalPixel[CurrentOriginalChannel] = (png_byte)BinBitStrToUint (CurrentColorValue, OriginalImage->BitDeph);
+                    CurrentOriginalPixel[(int)CurrentOriginalChannel] = (png_byte)BinBitStrToUint (CurrentColorValue, OriginalImage->BitDeph);
                 }
                 if (ReadChunks>=PNGHIDE_WIDTH_VAR_LEN+2 && ReadChunks<PNGHIDE_HEIGHT_VAR_LEN+PNGHIDE_WIDTH_VAR_LEN+2){
-                    IntToBitBinStr (CurrentOriginalPixel[CurrentOriginalChannel], CurrentColorValue, OriginalImage->BitDeph);
+                    IntToBitBinStr (CurrentOriginalPixel[(int)CurrentOriginalChannel], CurrentColorValue, OriginalImage->BitDeph);
                     CurrentColorValue [0] = EncodedHeight[ReadChunks-PNGHIDE_WIDTH_VAR_LEN-2];
-                    CurrentOriginalPixel[CurrentOriginalChannel] = (png_byte)BinBitStrToUint (CurrentColorValue, OriginalImage->BitDeph);
+                    CurrentOriginalPixel[(int)CurrentOriginalChannel] = (png_byte)BinBitStrToUint (CurrentColorValue, OriginalImage->BitDeph);
                 }
                 if (ReadChunks>=PNGHIDE_HEIGHT_VAR_LEN+PNGHIDE_WIDTH_VAR_LEN+2 && ReadChunks<PNGHIDE_COLORSPACE_VAR_LEN+PNGHIDE_HEIGHT_VAR_LEN+PNGHIDE_WIDTH_VAR_LEN+2){
-                    IntToBitBinStr (CurrentOriginalPixel[CurrentOriginalChannel], CurrentColorValue, OriginalImage->BitDeph);
+                    IntToBitBinStr (CurrentOriginalPixel[(int)CurrentOriginalChannel], CurrentColorValue, OriginalImage->BitDeph);
                     CurrentColorValue [0] = EncodedColorSpace[ReadChunks-PNGHIDE_HEIGHT_VAR_LEN-PNGHIDE_WIDTH_VAR_LEN-2];
-                    CurrentOriginalPixel[CurrentOriginalChannel] = (png_byte)BinBitStrToUint (CurrentColorValue, OriginalImage->BitDeph);
+                    CurrentOriginalPixel[(int)CurrentOriginalChannel] = (png_byte)BinBitStrToUint (CurrentColorValue, OriginalImage->BitDeph);
                 }
                 if (ReadChunks>=PNGHIDE_COLORSPACE_VAR_LEN+PNGHIDE_HEIGHT_VAR_LEN+PNGHIDE_WIDTH_VAR_LEN+2 && ReadChunks<PNGHIDE_BIT_DEPH_VAR_LEN+PNGHIDE_COLORSPACE_VAR_LEN+PNGHIDE_HEIGHT_VAR_LEN+PNGHIDE_WIDTH_VAR_LEN+2){
-                    IntToBitBinStr (CurrentOriginalPixel[CurrentOriginalChannel], CurrentColorValue, OriginalImage->BitDeph);
+                    IntToBitBinStr (CurrentOriginalPixel[(int)CurrentOriginalChannel], CurrentColorValue, OriginalImage->BitDeph);
                     CurrentColorValue [0] = EncodedBitDeph[ReadChunks-PNGHIDE_COLORSPACE_VAR_LEN-PNGHIDE_HEIGHT_VAR_LEN-PNGHIDE_WIDTH_VAR_LEN-2];
-                    CurrentOriginalPixel[CurrentOriginalChannel] = (png_byte)BinBitStrToUint (CurrentColorValue, OriginalImage->BitDeph);
+                    CurrentOriginalPixel[(int)CurrentOriginalChannel] = (png_byte)BinBitStrToUint (CurrentColorValue, OriginalImage->BitDeph);
                 }
                 if (ReadChunks>=PNGHIDE_BIT_DEPH_VAR_LEN+PNGHIDE_COLORSPACE_VAR_LEN+PNGHIDE_HEIGHT_VAR_LEN+PNGHIDE_WIDTH_VAR_LEN+2){
                         if (CurrentHiddenBit == HiddenImage->BitDeph){
@@ -198,10 +204,10 @@ short int EncodeImages (Picture *OriginalImage, Picture *HiddenImage){
 
 
                         CurrentHiddenPixel = &(CurrentHiddenRow[HiddenX*HiddenNeededChannels]);
-                        IntToBitBinStr (CurrentOriginalPixel[CurrentOriginalChannel], CurrentColorValue, OriginalImage->BitDeph);
-                        IntToBitBinStr (CurrentHiddenPixel[CurrentHiddenChannel], HiddenColorValue, HiddenImage->BitDeph);
-                        CurrentColorValue[0] = HiddenColorValue[CurrentHiddenBit];
-                        CurrentOriginalPixel[CurrentOriginalChannel] = (png_byte)BinBitStrToUint(CurrentColorValue, OriginalImage->BitDeph);
+                        IntToBitBinStr (CurrentOriginalPixel[(int)CurrentOriginalChannel], CurrentColorValue, OriginalImage->BitDeph);
+                        IntToBitBinStr (CurrentHiddenPixel[(int)CurrentHiddenChannel], HiddenColorValue, HiddenImage->BitDeph);
+                        CurrentColorValue[0] = HiddenColorValue[(int)CurrentHiddenBit];
+                        CurrentOriginalPixel[(int)CurrentOriginalChannel] = (png_byte)BinBitStrToUint(CurrentColorValue, OriginalImage->BitDeph);
                         CurrentHiddenBit++;
 
 
@@ -230,30 +236,30 @@ short int EncodeImages (Picture *OriginalImage, Picture *HiddenImage){
             for (CurrentOriginalChannel=OriginalUsableChannels-1; CurrentOriginalChannel>=0 && EndSignal == 0;CurrentOriginalChannel--){
 
                 if (ReadChunks>=0 && ReadChunks<=1){
-                    IntToBitBinStr (CurrentOriginalPixel[CurrentOriginalChannel], CurrentColorValue, OriginalImage->BitDeph);
+                    IntToBitBinStr (CurrentOriginalPixel[(int)CurrentOriginalChannel], CurrentColorValue, OriginalImage->BitDeph);
                     CurrentColorValue[0] = 0;
                     CurrentColorValue[1] = 1;
-                    CurrentOriginalPixel[CurrentOriginalChannel] = (png_byte)BinBitStrToUint(CurrentColorValue, OriginalImage->BitDeph);
+                    CurrentOriginalPixel[(int)CurrentOriginalChannel] = (png_byte)BinBitStrToUint(CurrentColorValue, OriginalImage->BitDeph);
                 }
                 if (ReadChunks>1 && ReadChunks<PNGHIDE_WIDTH_VAR_LEN+2){
-                    IntToBitBinStr (CurrentOriginalPixel[CurrentOriginalChannel], CurrentColorValue, OriginalImage->BitDeph);
+                    IntToBitBinStr (CurrentOriginalPixel[(int)CurrentOriginalChannel], CurrentColorValue, OriginalImage->BitDeph);
                     CurrentColorValue [0] = EncodedWidth[ReadChunks-2];
-                    CurrentOriginalPixel[CurrentOriginalChannel] = (png_byte)BinBitStrToUint(CurrentColorValue, OriginalImage->BitDeph);
+                    CurrentOriginalPixel[(int)CurrentOriginalChannel] = (png_byte)BinBitStrToUint(CurrentColorValue, OriginalImage->BitDeph);
                 }
                 if (ReadChunks>=PNGHIDE_WIDTH_VAR_LEN+2 && ReadChunks<PNGHIDE_HEIGHT_VAR_LEN+PNGHIDE_WIDTH_VAR_LEN+2){
-                    IntToBitBinStr (CurrentOriginalPixel[CurrentOriginalChannel], CurrentColorValue, OriginalImage->BitDeph);
+                    IntToBitBinStr (CurrentOriginalPixel[(int)CurrentOriginalChannel], CurrentColorValue, OriginalImage->BitDeph);
                     CurrentColorValue [0] = EncodedHeight[ReadChunks-PNGHIDE_WIDTH_VAR_LEN-2];
-                    CurrentOriginalPixel[CurrentOriginalChannel] = (png_byte)BinBitStrToUint(CurrentColorValue, OriginalImage->BitDeph);
+                    CurrentOriginalPixel[(int)CurrentOriginalChannel] = (png_byte)BinBitStrToUint(CurrentColorValue, OriginalImage->BitDeph);
                 }
                 if (ReadChunks>=PNGHIDE_HEIGHT_VAR_LEN+PNGHIDE_WIDTH_VAR_LEN+2 && ReadChunks<PNGHIDE_COLORSPACE_VAR_LEN+PNGHIDE_HEIGHT_VAR_LEN+PNGHIDE_WIDTH_VAR_LEN+2){
-                    IntToBitBinStr (CurrentOriginalPixel[CurrentOriginalChannel], CurrentColorValue, OriginalImage->BitDeph);
+                    IntToBitBinStr (CurrentOriginalPixel[(int)CurrentOriginalChannel], CurrentColorValue, OriginalImage->BitDeph);
                     CurrentColorValue [0] = EncodedColorSpace[ReadChunks-PNGHIDE_HEIGHT_VAR_LEN-PNGHIDE_WIDTH_VAR_LEN-2];
-                    CurrentOriginalPixel[CurrentOriginalChannel] = (png_byte)BinBitStrToUint(CurrentColorValue, OriginalImage->BitDeph);
+                    CurrentOriginalPixel[(int)CurrentOriginalChannel] = (png_byte)BinBitStrToUint(CurrentColorValue, OriginalImage->BitDeph);
                 }
                 if (ReadChunks>=PNGHIDE_COLORSPACE_VAR_LEN+PNGHIDE_HEIGHT_VAR_LEN+PNGHIDE_WIDTH_VAR_LEN+2 && ReadChunks<PNGHIDE_BIT_DEPH_VAR_LEN+PNGHIDE_COLORSPACE_VAR_LEN+PNGHIDE_HEIGHT_VAR_LEN+PNGHIDE_WIDTH_VAR_LEN+2){
-                    IntToBitBinStr (CurrentOriginalPixel[CurrentOriginalChannel], CurrentColorValue, OriginalImage->BitDeph);
+                    IntToBitBinStr (CurrentOriginalPixel[(int)CurrentOriginalChannel], CurrentColorValue, OriginalImage->BitDeph);
                     CurrentColorValue [0] = EncodedBitDeph[ReadChunks-PNGHIDE_COLORSPACE_VAR_LEN-PNGHIDE_HEIGHT_VAR_LEN-PNGHIDE_WIDTH_VAR_LEN-2];
-                    CurrentOriginalPixel[CurrentOriginalChannel] = (png_byte)BinBitStrToUint(CurrentColorValue, OriginalImage->BitDeph);
+                    CurrentOriginalPixel[(int)CurrentOriginalChannel] = (png_byte)BinBitStrToUint(CurrentColorValue, OriginalImage->BitDeph);
                 }
                 if (ReadChunks>=PNGHIDE_BIT_DEPH_VAR_LEN+PNGHIDE_COLORSPACE_VAR_LEN+PNGHIDE_HEIGHT_VAR_LEN+PNGHIDE_WIDTH_VAR_LEN+2){
                         if (CurrentHiddenBit == HiddenImage->BitDeph){
@@ -277,10 +283,10 @@ short int EncodeImages (Picture *OriginalImage, Picture *HiddenImage){
 
 
                         CurrentHiddenPixel = &(CurrentHiddenRow[HiddenX*HiddenNeededChannels]);
-                        IntToBitBinStr (CurrentOriginalPixel[CurrentOriginalChannel], CurrentColorValue, OriginalImage->BitDeph);
-                        IntToBitBinStr (CurrentHiddenPixel[CurrentHiddenChannel], HiddenColorValue, HiddenImage->BitDeph);
-                        CurrentColorValue[0] = HiddenColorValue[CurrentHiddenBit];
-                        CurrentOriginalPixel[CurrentOriginalChannel] = (png_byte)BinBitStrToUint(CurrentColorValue, OriginalImage->BitDeph);
+                        IntToBitBinStr (CurrentOriginalPixel[(int)CurrentOriginalChannel], CurrentColorValue, OriginalImage->BitDeph);
+                        IntToBitBinStr (CurrentHiddenPixel[(int)CurrentHiddenChannel], HiddenColorValue, HiddenImage->BitDeph);
+                        CurrentColorValue[0] = HiddenColorValue[(int)CurrentHiddenBit];
+                        CurrentOriginalPixel[(int)CurrentOriginalChannel] = (png_byte)BinBitStrToUint(CurrentColorValue, OriginalImage->BitDeph);
                         CurrentHiddenBit++;
 
 

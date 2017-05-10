@@ -4,9 +4,9 @@
 #include <png.h>
 #include <zlib.h>
 
-#include "PNGhideDataDefinitions.h"
-#include "PNGhideFileOperations.h"
-#include "PNGhideMiscFunctions.h"
+#include <PNGhideDataDefinitions.h>
+#include <PNGhideFileOperations.h>
+#include <PNGhideMiscFunctions.h>
 
 short int FindHeader (Picture *OriginalImage, Picture *OutputImage);
 short int DecodeImages (Picture *OriginalImage, Picture *HiddenImage);
@@ -110,7 +110,7 @@ short int PrintHeader (Picture *Image){
 short int FindHeader (Picture *OriginalImage, Picture *OutputImage){
     short int OriginalUsableChannels;///<Stores the amount of color channels in the input image that can be used to store information.
     short int OriginalTotalChannels; ///<Stores the total amount of color channels in the input image.
-    short int err;
+    short int err = 0;
     uint64_t ReadChunks;///<Counts how many image channels we have stracted information from.
     int64_t X,Y;///<Our current X,Y position on the input image.
     png_byte* CurrentOriginalRow; ///<Pointer to the beginning of a row's array of pixels.
@@ -175,23 +175,23 @@ short int FindHeader (Picture *OriginalImage, Picture *OutputImage){
                     EndSignal = 1; ///<We finished reading the header at the beginning of the image
                 }
                 if (ReadChunks <= 1){
-                    IntToBitBinStr (CurrentOriginalPixel[i], CurrentColorValue, OriginalImage->BitDeph);///<Read key bits.
+                    IntToBitBinStr (CurrentOriginalPixel[(int)i], CurrentColorValue, OriginalImage->BitDeph);///<Read key bits.
                     BinCopy (KeyBitsStart[ReadChunks],CurrentColorValue,2);
                 }
                 if (ReadChunks>1 && ReadChunks<PNGHIDE_WIDTH_VAR_LEN+2){
-                    IntToBitBinStr (CurrentOriginalPixel[i], CurrentColorValue, OriginalImage->BitDeph);///<Convert the current decimal color value to a binary array.
+                    IntToBitBinStr (CurrentOriginalPixel[(int)i], CurrentColorValue, OriginalImage->BitDeph);///<Convert the current decimal color value to a binary array.
                     BinWidthStart[ReadChunks-2] = CurrentColorValue[0];///<Store the LSB into an array.
                 }
                 if (ReadChunks>=PNGHIDE_WIDTH_VAR_LEN+2 && ReadChunks<PNGHIDE_HEIGHT_VAR_LEN+PNGHIDE_WIDTH_VAR_LEN+2){
-                    IntToBitBinStr (CurrentOriginalPixel[i], CurrentColorValue, OriginalImage->BitDeph);
+                    IntToBitBinStr (CurrentOriginalPixel[(int)i], CurrentColorValue, OriginalImage->BitDeph);
                     BinHeightStart[ReadChunks-PNGHIDE_WIDTH_VAR_LEN-2] = CurrentColorValue[0];
                 }
                 if (ReadChunks>=PNGHIDE_HEIGHT_VAR_LEN+PNGHIDE_WIDTH_VAR_LEN+2 && ReadChunks<PNGHIDE_COLORSPACE_VAR_LEN+PNGHIDE_HEIGHT_VAR_LEN+PNGHIDE_WIDTH_VAR_LEN+2){
-                    IntToBitBinStr (CurrentOriginalPixel[i], CurrentColorValue, OriginalImage->BitDeph);
+                    IntToBitBinStr (CurrentOriginalPixel[(int)i], CurrentColorValue, OriginalImage->BitDeph);
                     BinColorSpaceStart[ReadChunks-PNGHIDE_HEIGHT_VAR_LEN-PNGHIDE_WIDTH_VAR_LEN-2] = CurrentColorValue[0];
                 }
                 if (ReadChunks>=PNGHIDE_COLORSPACE_VAR_LEN+PNGHIDE_HEIGHT_VAR_LEN+PNGHIDE_WIDTH_VAR_LEN+2 && ReadChunks<PNGHIDE_BIT_DEPH_VAR_LEN+PNGHIDE_COLORSPACE_VAR_LEN+PNGHIDE_HEIGHT_VAR_LEN+PNGHIDE_WIDTH_VAR_LEN+2){
-                    IntToBitBinStr (CurrentOriginalPixel[i], CurrentColorValue, OriginalImage->BitDeph);
+                    IntToBitBinStr (CurrentOriginalPixel[(int)i], CurrentColorValue, OriginalImage->BitDeph);
                     BinBitDephStart[ReadChunks-PNGHIDE_COLORSPACE_VAR_LEN-PNGHIDE_HEIGHT_VAR_LEN-PNGHIDE_WIDTH_VAR_LEN-2] = CurrentColorValue[0];
                 }
                 ReadChunks ++;
@@ -212,23 +212,23 @@ short int FindHeader (Picture *OriginalImage, Picture *OutputImage){
                     EndSignal = 1; ///<We finished reading the header at the end of the image.
                 }
                 if (ReadChunks <= 1){
-                    IntToBitBinStr (CurrentOriginalPixel[i], CurrentColorValue, OriginalImage->BitDeph);///<Read key bits.
+                    IntToBitBinStr (CurrentOriginalPixel[(int)i], CurrentColorValue, OriginalImage->BitDeph);///<Read key bits.
                     BinCopy (KeyBitsEnd[ReadChunks],CurrentColorValue,2);
                 }
                 if (ReadChunks>1 && ReadChunks<PNGHIDE_WIDTH_VAR_LEN+2){
-                    IntToBitBinStr (CurrentOriginalPixel[i], CurrentColorValue, OriginalImage->BitDeph);
+                    IntToBitBinStr (CurrentOriginalPixel[(int)i], CurrentColorValue, OriginalImage->BitDeph);
                     BinWidthEnd[ReadChunks-2] = CurrentColorValue[0];
                 }
                 if (ReadChunks>=PNGHIDE_WIDTH_VAR_LEN+2 && ReadChunks<PNGHIDE_HEIGHT_VAR_LEN+PNGHIDE_WIDTH_VAR_LEN+2){
-                    IntToBitBinStr (CurrentOriginalPixel[i], CurrentColorValue, OriginalImage->BitDeph);
+                    IntToBitBinStr (CurrentOriginalPixel[(int)i], CurrentColorValue, OriginalImage->BitDeph);
                     BinHeightEnd[ReadChunks-PNGHIDE_WIDTH_VAR_LEN-2] = CurrentColorValue[0];
                 }
                 if (ReadChunks>=PNGHIDE_HEIGHT_VAR_LEN+PNGHIDE_WIDTH_VAR_LEN+2 && ReadChunks<PNGHIDE_COLORSPACE_VAR_LEN+PNGHIDE_HEIGHT_VAR_LEN+PNGHIDE_WIDTH_VAR_LEN+2){
-                    IntToBitBinStr (CurrentOriginalPixel[i], CurrentColorValue, OriginalImage->BitDeph);
+                    IntToBitBinStr (CurrentOriginalPixel[(int)i], CurrentColorValue, OriginalImage->BitDeph);
                     BinColorSpaceEnd[ReadChunks-PNGHIDE_HEIGHT_VAR_LEN-PNGHIDE_WIDTH_VAR_LEN-2] = CurrentColorValue[0];
                 }
                 if (ReadChunks>=PNGHIDE_COLORSPACE_VAR_LEN+PNGHIDE_HEIGHT_VAR_LEN+PNGHIDE_WIDTH_VAR_LEN+2 && ReadChunks<PNGHIDE_BIT_DEPH_VAR_LEN+PNGHIDE_COLORSPACE_VAR_LEN+PNGHIDE_HEIGHT_VAR_LEN+PNGHIDE_WIDTH_VAR_LEN+2){
-                    IntToBitBinStr (CurrentOriginalPixel[i], CurrentColorValue, OriginalImage->BitDeph);
+                    IntToBitBinStr (CurrentOriginalPixel[(int)i], CurrentColorValue, OriginalImage->BitDeph);
                     BinBitDephEnd[ReadChunks-PNGHIDE_COLORSPACE_VAR_LEN-PNGHIDE_HEIGHT_VAR_LEN-PNGHIDE_WIDTH_VAR_LEN-2] = CurrentColorValue[0];
                 }
                 ReadChunks ++;
@@ -320,6 +320,9 @@ short int FindHeader (Picture *OriginalImage, Picture *OutputImage){
                     else {
                         if (CompareBin (BinBitDephStart,BinBitDephEnd,PNGHIDE_BIT_DEPH_VAR_LEN) != 0){
                             err = 1;
+                        }
+                        else {
+                            err = 0;
                         }
                     }
                 }
