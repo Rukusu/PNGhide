@@ -62,14 +62,17 @@ short int GetHeaderDetails (Picture *Image){
     if (!Image){
         return -1;
     }
+    int aux;
     printf ("Width <px>: ");
     scanf("%u",&(Image->Width));
     printf ("Height <px>: ");
     scanf("%u",&(Image->Height));
     printf ("Bit Deph: ");
-    scanf("%s",&(Image->BitDeph));
+    scanf("%d",&aux);
+    (Image->BitDeph) = aux;
     printf ("Color Space <dec>: ");
-    scanf("%s",&(Image->ColorSpace));
+    scanf("%d",&aux);
+    (Image->ColorSpace) = aux;
     return 0;
 }
 
