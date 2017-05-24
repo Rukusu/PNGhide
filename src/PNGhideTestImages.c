@@ -32,14 +32,17 @@ int main (int argc, char **argv) {
     OriginalImage.FileLocation = argv[1];
     AlteredImage.FileLocation = argv [2];
 
+    ///We load the original Image
     err = loadPicture (&OriginalImage);
     if (err != 0)
         return (err);
 
+    ///We load the altered Image.
     err = loadPicture (&AlteredImage);
     if (err != 0)
         return (err);
 
+    ///PNG palette mode is not supported.
     if (OriginalImage.ColorSpace == PNG_COLOR_TYPE_PALETTE || AlteredImage.ColorSpace == PNG_COLOR_TYPE_PALETTE){
         printf ("Error: Palette mode is not supported\n");
         return -3;
@@ -53,6 +56,7 @@ int main (int argc, char **argv) {
     if (err != 0)
         return err;
 
+    ///We check that both images have the same properties.
     if (OriginalImage.Width != AlteredImage.Width){
         printf("Error: Image width missmath\n");
         err = -10;
@@ -81,6 +85,7 @@ int main (int argc, char **argv) {
         printf ("PSNR = %f\n",PSNR);
         printf ("SSIM = %f\n",SSIM);
     }
+    ///We free the memory the images were on.
     FreeImage (&OriginalImage);
     FreeImage (&AlteredImage);
 
@@ -92,9 +97,9 @@ return 0;
 
 double CalcMSE (Picture OriginalImage, Picture AlteredImage){
     double MSE = 0;
-    uint32_t X,Y;
-    short int ImageChannels = GetUsableChannels(&OriginalImage);
-    short int TotalChannels = GetTotalChannels(&OriginalImage);
+    uint32_t X,Y; ///Our current position inside the image.
+    short int ImageChannels = GetUsableChannels(&OriginalImage);///We get how many color channels the image has without the alpha one, since its not considered by the algorytm definition.
+    short int TotalChannels = GetTotalChannels(&OriginalImage);///We get how many color channels the image has.
     short int CurrentChannel;
 
     png_byte* CurrentOriginalRow; ///<Pointer to the beginning of a row's array of pixels.
@@ -114,12 +119,12 @@ double CalcMSE (Picture OriginalImage, Picture AlteredImage){
             CurrentAlteredPixel = &(CurrentAlteredRow[X*TotalChannels]);
 
             for (CurrentChannel=0;CurrentChannel<ImageChannels;CurrentChannel++){
-                MSE = MSE + pow((CurrentOriginalPixel[CurrentChannel]-CurrentAlteredPixel[CurrentChannel]),2);
+                MSE = MSE + pow((CurrentOriginalPixel[CurrentChannel]-CurrentAlteredPixel[CurrentChannel]),2);///We calculate the summatory part of the MSE.
 
             }
         }
     }
-    MSE = MSE/(OriginalImage.Width*OriginalImage.Height*ImageChannels);
+    MSE = MSE/(OriginalImage.Width*OriginalImage.Height*ImageChannels);///We devide the summatory between the image's resolution.
 
 
     return (MSE);
@@ -127,8 +132,8 @@ double CalcMSE (Picture OriginalImage, Picture AlteredImage){
 
 double CalcPSNR (double MSE, short int bitDeph) {
     double PSNR = 0;
-    PSNR = 10*log10(pow((pow(2,bitDeph)-1),2)/MSE);
-    return PSNR;
+    PSNR = 10*log10(pow((pow(2,bitDeph)-1),2)/MSE);///We calculate the PSNR.
+    return PSNR;///PSNR will be inf if MSE is zero.
 }
 
 
@@ -142,16 +147,16 @@ double CalcSSIM (Picture OriginalImage, Picture AlteredImage) {
     png_byte* CurrentAlteredRow; ///<Pointer to the beginning of a row's array of pixels.
     png_byte* CurrentAlteredPixel[N]; ///<Pointer to the input image's pixel struct.
 
-    float C1 = pow ((pow (2,OriginalImage.BitDeph)-1) * .001,2);
+    float C1 = pow ((pow (2,OriginalImage.BitDeph)-1) * .001,2);///C1 and C2 are not strictly defined on the SSIM documentation, so we are useing albitrary numbers.
     float C2 = C1;
 
     unsigned char CurrentColorSpace = 0;
-    unsigned char ImageChannels = GetTotalChannels (&OriginalImage);
+    unsigned char ImageChannels = GetTotalChannels (&OriginalImage);///We get how many color channels the image has
     unsigned char UsableColorSpaces = GetUsableChannels (&OriginalImage);
 
     SSIMVals Im1;
     SSIMVals Im2;
-    double ChannelSSIM[UsableColorSpaces];
+    double ChannelSSIM[UsableColorSpaces];///The SSIM value for each color channel, so the can be averaged at the end, to get the general SSIM value.
     double Covariance;
 
 
@@ -173,13 +178,15 @@ double CalcSSIM (Picture OriginalImage, Picture AlteredImage) {
                 Im1.Sigma = 0;
                 Im2.Sigma = 0;
                 Covariance = 0;
+                ///We calculate the average for out current pixel.
                 for (i=0;i<N;i++){
                     Im1.Mu = Im1.Mu + CurrentOriginalPixel[i][CurrentColorSpace];
                     Im2.Mu = Im2.Mu + CurrentAlteredPixel[i][CurrentColorSpace];
                 }
                 Im1.Mu = Im1.Mu / N;
                 Im2.Mu = Im2.Mu / N;
-                //printf ("Mu = %f %f\n",Im1.Mu,Im2.Mu);
+
+                ///We calculate the variance and covariance for our current pixel.
                 for (i=0;i<N;i++){
                     Im1.Sigma = Im1.Sigma + pow(CurrentOriginalPixel[i][CurrentColorSpace] - Im1.Mu,2);
                     Im2.Sigma = Im2.Sigma + pow(CurrentAlteredPixel[i][CurrentColorSpace] - Im2.Mu,2);
@@ -196,6 +203,7 @@ double CalcSSIM (Picture OriginalImage, Picture AlteredImage) {
     for (CurrentColorSpace = 0; CurrentColorSpace<UsableColorSpaces; CurrentColorSpace++){
             ChannelSSIM[CurrentColorSpace] = ChannelSSIM[CurrentColorSpace]/(OriginalImage.Height*(OriginalImage.Width-N));
     }
+    ///We average each chanels' SSIM value to get the general SSIM value.
     for (CurrentColorSpace = 0; CurrentColorSpace<UsableColorSpaces; CurrentColorSpace++){
             SSIM = SSIM + ChannelSSIM[CurrentColorSpace];
     }
