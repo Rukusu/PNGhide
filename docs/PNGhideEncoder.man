@@ -1,0 +1,13 @@
+NAME
+    PNGhideEncoder - Encode a PNG image inside another.
+SYNOPSIS
+    PNGhideEncoder <host image.png> <guest image.png> <output image.png>
+DESCRIPTION
+    A simple steganography program to hide a png inside another, using the LSB method.
+EXAMPLES
+    PNGhideEncoder <host image.png> <guest image.png> <output image.png>
+SEE ALSO
+    PNGhideDecoder
+    PNGhideTestImages
+BUGS
+    N/A

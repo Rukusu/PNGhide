@@ -1,0 +1,13 @@
+NAME
+    PNGhideDecoder - Decode a PNG image hidden by PNGhideEncoder.
+SYNOPSIS
+    PNGhideDecoder <host image.png> <output image.png>
+DESCRIPTION
+    A simple steganography program to hide a png inside another, using the LSB method.
+EXAMPLES
+    PNGhideDecoder <host image.png> <output image.png>
+SEE ALSO
+    PNGhideEncoder
+    PNGhideTestImages
+BUGS
+    Compiling with GCC may add noise to the output image.

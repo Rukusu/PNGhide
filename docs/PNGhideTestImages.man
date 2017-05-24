@@ -1,0 +1,13 @@
+NAME
+    PNGhideTestImages - Test the output image from PNGhideEncoder.
+SYNOPSIS
+    PNGhideTestImages <original image.png> <altered image.png>
+DESCRIPTION
+    Test two PNG images using the MSE, PSNR and SSIM algorithms
+EXAMPLES
+    PNGhideTestImages <original image.png> <altered image.png>
+SEE ALSO
+    PNGhideDecoder
+    PNGhideEncoder
+BUGS
+    On bigger images the SSIM might loose precision.
